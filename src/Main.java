@@ -34,7 +34,7 @@ public class Main {
         print(quantityOfVotes, ratingCols, numberOfVars, numberOfCols);
 
         System.out.println("_______________________________________________");
-        System.out.println("|Метод относительной большести|");
+        System.out.println("|Метод относительнго большинства|");
         relativeMajorityMethod(quantityOfVotes, ratingCols, numberOfCols);
         System.out.println("\n_______________________________________________");
         System.out.println("|Метод альтернативных голосов|");
