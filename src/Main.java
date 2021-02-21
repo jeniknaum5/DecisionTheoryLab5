@@ -35,7 +35,10 @@ public class Main {
 
         System.out.println("_______________________________________________");
         System.out.println("|Метод относительной большести|");
-        relativeMajorityMethod(quantityOfVotes, ratingCols, numberOfCols, numberOfVars);
+        relativeMajorityMethod(quantityOfVotes, ratingCols, numberOfCols);
+        System.out.println("\n_______________________________________________");
+        System.out.println("|Метод альтернативных голосов|");
+        alternativeVotesMethod(quantityOfVotes, ratingCols, numberOfVars, numberOfCols);
     }
 
 
@@ -54,11 +57,11 @@ public class Main {
     }
 
     public static void relativeMajorityMethod(ArrayList<Integer> quantityOfVotes, String[][] ratingCols,
-                                              int numberOfCols, int numberOfVars) {
+                                              int numberOfCols) {
 
         HashMap<String, Integer> buffer = new HashMap<>();
 
-        for (int i = 0; i < numberOfCols; i++) {
+        for (int i = 0; i < numberOfCols; i++) {//заполняем мапу
 
             if (buffer.containsKey(ratingCols[0][i]))
                 buffer.put(ratingCols[0][i], buffer.get(ratingCols[0][i]) + quantityOfVotes.get(i));
@@ -67,13 +70,13 @@ public class Main {
 
         }
 
-        for (String key : buffer.keySet())
+        for (String key : buffer.keySet())//вывод мапы кандидат :: кол-во голосов
             System.out.println(key + " :: " + buffer.get(key) + " votes");
 
         Integer maxValue = Collections.max(buffer.values());
         int count = 0;
         String key = null;
-        for (Map.Entry entry : buffer.entrySet()) {
+        for (Map.Entry entry : buffer.entrySet()) {//находим кандидата с наимбольшим кол-вом голосов
             if (maxValue.equals(entry.getValue())) {
                 key = (String) entry.getKey();
                 count++;
@@ -87,5 +90,71 @@ public class Main {
             System.out.println("Победитель кандидат: |" + key + "| с таким количеством голосов: " + maxValue);
     }
 
+    public static void alternativeVotesMethod(ArrayList<Integer> quantityOfVotes, String[][] ratingCols, int numberOfVars,
+                                              int numberOfCols) {
 
+
+        String[][] tempArray= new String[numberOfVars][numberOfCols];
+
+        int tempNumberOfVars = numberOfVars;
+        int tempNumberOfCols = numberOfCols;
+
+        for(int i=0; i < numberOfVars; i++){//заполняем массив данными из условия
+            for(int j=0; j<numberOfCols; j++)
+                tempArray[i][j]=ratingCols[i][j];
+        }
+
+        String keys = null;
+        for (int iter = 0; iter< numberOfVars-1; iter++){
+            HashMap<String, Integer> buffer = new HashMap<>();
+        System.out.println("\n|Тур № |");
+            print(quantityOfVotes, tempArray, tempNumberOfVars, tempNumberOfCols);
+
+            for (int j = 0; j < tempNumberOfVars; j++) { //заполняем мапу кандидатами c нулевыми голосами
+                for (int i = 0; i < tempNumberOfCols; i++) {
+                    buffer.put(tempArray[j][i], 0);
+                }
+            }
+
+            for (int i = 0; i < tempNumberOfCols; i++) {//заполняем мапу по первому ряду матрицы
+
+                if (buffer.containsKey(ratingCols[0][i]))
+                    buffer.put(tempArray[0][i], buffer.get(tempArray[0][i]) + quantityOfVotes.get(i));
+                else
+                    buffer.put(tempArray[0][i], quantityOfVotes.get(i));
+
+            }
+
+           // for (String key : buffer.keySet()) //выводим мапу кандидат :: кол-во голосов
+            //    System.out.println(key + " :: " + buffer.get(key) + " votes");
+
+            Integer minValue = Collections.min(buffer.values());
+            for (Map.Entry entry : buffer.entrySet()) {//ищем в мапе кандидата с наименьшим кол-вом голосов
+                if (minValue.equals(entry.getValue())) {
+                    keys = (String) entry.getKey();
+                    System.out.println("Меньше всех голосов набрал кандидат: |" + keys + "| ("+minValue+ " голосов)" +
+                            "\n\tКандидат |" + keys + "| исключен!");
+
+                }
+            }
+
+            String delete = keys;
+            String temp=null;
+            for(int i=0; i<tempNumberOfVars-1; i++){ //смещаем кандидата с наименьшим кол-во голосов вниз
+                for(int j=0;j <tempNumberOfCols; j++){
+                    if(tempArray[i][j].equals(delete)){
+                        temp= tempArray[i][j];
+                        tempArray[i][j] = tempArray[i+1][j];
+                        tempArray[i+1][j] = temp;
+                    }
+                }
+            }
+            //print(quantityOfVotes, tempArray, tempNumberOfVars, tempNumberOfCols);
+            for(int j=0; j< tempNumberOfCols; j++)
+                tempArray[tempNumberOfVars-1][j]=null;
+            tempNumberOfVars--;
+            buffer.clear();
+
+        }
+    }
 }
