@@ -34,7 +34,7 @@ public class Main {
         print(quantityOfVotes, ratingCols, numberOfVars, numberOfCols);
 
         System.out.println("_______________________________________________");
-        System.out.println("|Метод относительнго большинства|");
+        System.out.println("|Метод относительного большинства|");
         relativeMajorityMethod(quantityOfVotes, ratingCols, numberOfCols);
         System.out.println("\n_______________________________________________");
         System.out.println("|Метод альтернативных голосов|");
@@ -94,20 +94,20 @@ public class Main {
                                               int numberOfCols) {
 
 
-        String[][] tempArray= new String[numberOfVars][numberOfCols];
+        String[][] tempArray = new String[numberOfVars][numberOfCols];
 
         int tempNumberOfVars = numberOfVars;
         int tempNumberOfCols = numberOfCols;
 
-        for(int i=0; i < numberOfVars; i++){//заполняем массив данными из условия
-            for(int j=0; j<numberOfCols; j++)
-                tempArray[i][j]=ratingCols[i][j];
+        for (int i = 0; i < numberOfVars; i++) {//заполняем массив данными из условия
+            for (int j = 0; j < numberOfCols; j++)
+                tempArray[i][j] = ratingCols[i][j];
         }
 
         String keys = null;
-        for (int iter = 0; iter< numberOfVars-1; iter++){
+        for (int iter = 0; iter < numberOfVars - 1; iter++) {
             HashMap<String, Integer> buffer = new HashMap<>();
-        System.out.println("\n|Тур № |");
+            System.out.println("\n|Тур №"+ (iter+1) +"|");
             print(quantityOfVotes, tempArray, tempNumberOfVars, tempNumberOfCols);
 
             for (int j = 0; j < tempNumberOfVars; j++) { //заполняем мапу кандидатами c нулевыми голосами
@@ -125,36 +125,37 @@ public class Main {
 
             }
 
-           // for (String key : buffer.keySet()) //выводим мапу кандидат :: кол-во голосов
+            // for (String key : buffer.keySet()) //выводим мапу кандидат :: кол-во голосов
             //    System.out.println(key + " :: " + buffer.get(key) + " votes");
 
             Integer minValue = Collections.min(buffer.values());
             for (Map.Entry entry : buffer.entrySet()) {//ищем в мапе кандидата с наименьшим кол-вом голосов
                 if (minValue.equals(entry.getValue())) {
                     keys = (String) entry.getKey();
-                    System.out.println("Меньше всех голосов набрал кандидат: |" + keys + "| ("+minValue+ " голосов)" +
+                    System.out.println("Меньше всех голосов набрал кандидат: |" + keys + "| (" + minValue + " голосов)" +
                             "\n\tКандидат |" + keys + "| исключен!");
 
                 }
             }
 
             String delete = keys;
-            String temp=null;
-            for(int i=0; i<tempNumberOfVars-1; i++){ //смещаем кандидата с наименьшим кол-во голосов вниз
-                for(int j=0;j <tempNumberOfCols; j++){
-                    if(tempArray[i][j].equals(delete)){
-                        temp= tempArray[i][j];
-                        tempArray[i][j] = tempArray[i+1][j];
-                        tempArray[i+1][j] = temp;
+            String temp = null;
+            for (int i = 0; i < tempNumberOfVars - 1; i++) { //смещаем кандидата с наименьшим кол-во голосов вниз
+                for (int j = 0; j < tempNumberOfCols; j++) {
+                    if (tempArray[i][j].equals(delete)) {
+                        temp = tempArray[i][j];
+                        tempArray[i][j] = tempArray[i + 1][j];
+                        tempArray[i + 1][j] = temp;
                     }
                 }
             }
             //print(quantityOfVotes, tempArray, tempNumberOfVars, tempNumberOfCols);
-            for(int j=0; j< tempNumberOfCols; j++)
-                tempArray[tempNumberOfVars-1][j]=null;
+            for (int j = 0; j < tempNumberOfCols; j++)
+                tempArray[tempNumberOfVars - 1][j] = null;
             tempNumberOfVars--;
             buffer.clear();
 
         }
+        System.out.println("\n\tПобедитель: |" + tempArray[0][0] + "!!!");
     }
 }
