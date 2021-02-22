@@ -33,28 +33,17 @@ public class Main {
 
         print(quantityOfVotes, ratingCols, numberOfVars, numberOfCols);
 
-        System.out.println("_______________________________________________");
-        System.out.println("|Метод относительного большинства|");
-        relativeMajorityMethod(quantityOfVotes, ratingCols, numberOfCols);
-        System.out.println("\n_______________________________________________");
-        System.out.println("|Метод альтернативных голосов|");
-        alternativeVotesMethod(quantityOfVotes, ratingCols, numberOfVars, numberOfCols);
+//        System.out.println("_______________________________________________");
+//        System.out.println("|Метод относительного большинства|");
+//        relativeMajorityMethod(quantityOfVotes, ratingCols, numberOfCols);
+//        System.out.println("\n_______________________________________________");
+//        System.out.println("|Метод альтернативных голосов|");
+//        alternativeVotesMethod(quantityOfVotes, ratingCols, numberOfVars, numberOfCols);
+//        System.out.println("\n_______________________________________________");
+        System.out.println("|Метод Кондорсе|");
+        kondorseMethod(quantityOfVotes, ratingCols, numberOfVars, numberOfCols);
     }
 
-
-    public static void print(ArrayList<Integer> arrayList, String[][] ratingCols, int numberOfVars, int numberOfCols) {
-        for (int i : arrayList) {
-            System.out.print(i + " ");
-        }
-        System.out.println();
-        System.out.println("_ _ _");
-        for (int i = 0; i < numberOfVars; i++) {
-            for (int j = 0; j < numberOfCols; j++) {
-                System.out.print(ratingCols[i][j] + " ");
-            }
-            System.out.println();
-        }
-    }
 
     public static void relativeMajorityMethod(ArrayList<Integer> quantityOfVotes, String[][] ratingCols,
                                               int numberOfCols) {
@@ -107,7 +96,7 @@ public class Main {
         String keys = null;
         for (int iter = 0; iter < numberOfVars - 1; iter++) {
             HashMap<String, Integer> buffer = new HashMap<>();
-            System.out.println("\n|Тур №"+ (iter+1) +"|");
+            System.out.println("\n|Тур №" + (iter + 1) + "|");
             print(quantityOfVotes, tempArray, tempNumberOfVars, tempNumberOfCols);
 
             for (int j = 0; j < tempNumberOfVars; j++) { //заполняем мапу кандидатами c нулевыми голосами
@@ -156,6 +145,111 @@ public class Main {
             buffer.clear();
 
         }
-        System.out.println("\n\tПобедитель: |" + tempArray[0][0] + "!!!");
+        System.out.println("\n\tПобедитель: |" + tempArray[0][0] + "| !!!");
+    }
+
+    public static void kondorseMethod(ArrayList<Integer> quantityOfVotes, String[][] ratingCols,
+                                      int numberOfVars, int numberOfCols) {
+
+        //доп (дублированные) данные, чтоб не изменить главные входные данные
+        String[][] tempRatingCols = new String[numberOfVars][numberOfCols];
+        int tempNumberOfVars = numberOfVars;
+        int tempNumberOfCols = numberOfCols;
+        for (int i = 0; i < tempNumberOfVars; i++) {
+            for (int j = 0; j < tempNumberOfCols; j++)
+                tempRatingCols[i][j] = ratingCols[i][j];
+        }
+
+
+
+        //arraylists кандидатов и кол-ва побед
+        ArrayList<String> candidates = new ArrayList<>();
+        ArrayList<Integer> wins = new ArrayList<>(tempNumberOfVars);
+        for(int i=0; i< tempNumberOfVars;i++)
+            wins.add(0);
+
+        //находим кандидатов, которые учавствуют
+        for (int i = 0; i < tempNumberOfVars; i++) {
+            for (int j = 0; j < tempNumberOfCols; j++) {
+                if (!candidates.contains(tempRatingCols[i][j]))
+                    candidates.add(tempRatingCols[i][j]);
+            }
+        }
+        //сортируем для удобства
+        Collections.sort(candidates);
+//        for (String str : candidates) {
+//            System.out.print(str + " ");
+//        }
+
+        System.out.println();
+        for (int i = 0; i < tempNumberOfVars - 1; i++) {
+            String str1 = candidates.get(i);
+            for (int j = (i + 1); j < tempNumberOfVars; j++) {
+                String str2 = candidates.get(j);
+                int int1=0, int2=0;
+
+
+                ////for поиска доминирующего
+                for (int cols = 0; cols < tempNumberOfCols; cols++) {
+                    for (int rows = 0; rows < tempNumberOfVars; rows++) {
+                        if (str1.equals(tempRatingCols[rows][cols])){
+                            int1+=quantityOfVotes.get(cols);
+                            break;
+                        }else if(str2.equals(tempRatingCols[rows][cols])){
+                            int2+= quantityOfVotes.get(cols);
+                            break;
+                        }
+                    }
+                }
+                if (int1>int2)
+                    wins.set(i,(wins.get(i)+1));
+                else
+                    wins.set(j,(wins.get(j)+1));
+
+                System.out.println(str1+":"+str2+ " = "+int1+":"+int2);
+            }
+            System.out.println();
+
+        }
+        System.out.print("candidates:\t");
+        for(String i: candidates)
+            System.out.print(i+ " ");
+        System.out.print("\nWins:\t\t");
+        for(Integer i: wins)
+            System.out.print(i+ " ");
+        HashMap<String, Integer> results = new HashMap<>();
+        for(int i=0;i<tempNumberOfVars;i++)
+            results.put(candidates.get(i),wins.get(i));
+
+        if(wins.contains(tempNumberOfVars-1)){
+            String key = null;
+            Integer value = tempNumberOfVars-1;
+            for(Map.Entry entry: results.entrySet()){
+                if(value.equals(entry.getValue())){
+                    key = (String)entry.getKey();
+                }
+            }
+            System.out.println("Абсолютный победитель: |"+ key + "|");
+        }else{
+            System.out.println("\nТак как каждый участник и выигрывает и проигрывает," +
+                    "\nто это \"парадокс голосования\"" +
+                    "\n|ПОБЕДИТЕЛЯ НЕТ|");
+        }
+    }
+
+
+    public static void print(ArrayList<Integer> arrayList, String[][] ratingCols,
+                             int numberOfVars, int numberOfCols) {
+        for (int i : arrayList) {
+            System.out.print(i + " ");
+        }
+        System.out.println();
+        System.out.println("_ _ _");
+        for (int i = 0; i < numberOfVars; i++) {
+            for (int j = 0; j < numberOfCols; j++) {
+                System.out.print(ratingCols[i][j] + " ");
+            }
+            System.out.println();
+        }
     }
 }
